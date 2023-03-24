@@ -20,8 +20,6 @@ const handler = (request,response) => {
     return Promise.resolve(chosen(request,response))
     .catch(err.handlerError(response))
 
-
-    
 }
 
 export default handler

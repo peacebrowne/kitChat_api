@@ -1,4 +1,4 @@
-import { DEFAULT_HEADER, header } from "../util/util.js";
+import { DEFAULT_HEADER } from "../util/util.js";
 class Err {
 
     constructor(request,response) {
@@ -12,8 +12,8 @@ class Err {
 
         return error => {
 
-            console.log('something bad has happened!!', error.stack)
-            response.writeHead(500, header);
+            console.log('something bad has happened!!', error.message)
+            response.writeHead(500, DEFAULT_HEADER);
             
             this.response.write(JSON.stringify({
                 error: 'Internal server error!!'
