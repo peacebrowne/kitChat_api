@@ -1,0 +1,22 @@
+{
+  "name": "kitchat_api",
+  "version": "1.0.0",
+  "description": "Kwagei innovators training chat application for students",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Emmanuel Browne",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "socket.io": "^4.6.1",
+    "uuid": "^9.0.0"
+  }
+}
