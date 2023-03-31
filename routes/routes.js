@@ -1,11 +1,15 @@
 import { DEFAULT_HEADER } from "../util/util.js";
-import repositories from "../repositories/repositories.js"
+import {
+    readFile,
+    writeFile
+} from "../repositories/repositories.js"
 import { once } from "node:events";
 
 const routes = {
 
     '/user:get': async (request,response) => {
 
+        readFile()
         response.writeHead(200,DEFAULT_HEADER)
         response.write('GET METHOD')
         response.end()
@@ -15,6 +19,7 @@ const routes = {
 
         const data = await once(request, 'data') 
         const items = JSON.parse(data)
+        writeFile(items)
 
         response.writeHead(200,DEFAULT_HEADER)
         response.write('POST METHOD')

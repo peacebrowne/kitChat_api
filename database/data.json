@@ -6,5 +6,10 @@
         "email":"peace@gmail.com",
         "password":"12345",
         "confirmPassword":"12345"
+    },
+    {
+        "name":"peace browne",
+        "age":20,
+        "id":10
     }
 ]

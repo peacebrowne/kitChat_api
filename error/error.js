@@ -19,10 +19,11 @@ class Err {
                 error: 'Internal server error!!'
             }))
     
-            return this.response.end()
+            return this.response.end();
         }
 
     }
+
 }
 
 export default Err
