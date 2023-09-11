@@ -1,0 +1,18 @@
+{
+  "name": "kitchat_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Emmanuel Browne",
+  "license": "ISC",
+  "dependencies": {
+    "nodemon": "^3.0.1",
+    "uuid": "^9.0.0"
+  }
+}
