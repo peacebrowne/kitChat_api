@@ -1,1 +1,16 @@
-[{"name":"John Doe","email":"example@gmail.com","password":"1234567890"},{"name":"John Doe","email":"example@gmail.com","password":"123456790"},{"name":"John Doe","email":"example@gmail.com","password":"123456790"},{"name":"John Doe","email":"example@gmail.com","password":"123456790"},{"name":"John Doe","email":"example@gmail.com","password":"123456790"},{"name":"John Doe","email":"example@gmail.com","password":"123456790"},{"name":"John Doe","email":"example@gmail.com","password":"123456790"},{"name":"John Doe","email":"example@gmail.com","password":"123456790"},{"name":"John Doe","email":"example@gmail.com","password":"123456790"}]
+[
+  {
+    "name": "John Doe",
+    "email": "john@gmail.com",
+    "password": "HABelke52#@alie",
+    "id": "b7b96961-527a-4329-a547-95185c018660",
+    "active": false
+  },
+  {
+    "name": "Ruth Doe",
+    "email": "example@gmail.com",
+    "password": "HABelke52#@alie",
+    "id": "0a9597d2-0453-43f4-b176-b60bf54633c5",
+    "active": false
+  }
+]

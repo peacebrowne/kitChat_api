@@ -10,7 +10,8 @@ const routes = {
     response.end();
   },
   "/user:post": async (request, response) => {
-    const data = await once(request, "data");
+    const data = once(request, "data");
+    console.log("post");
     const result = await writeFile(data);
     response.writeHead(200, DEFAULT_HEADER);
     response.write(JSON.stringify(result));

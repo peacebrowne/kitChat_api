@@ -12,6 +12,8 @@
   "author": "Emmanuel Browne",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "nodemon": "^3.0.1",
     "uuid": "^9.0.0"
   }

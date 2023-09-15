@@ -2,7 +2,15 @@ import { parse } from "node:url";
 import { routes } from "./routes/routes.js";
 import { DEFAULT_HEADER } from "./util/util.js";
 
-function handler(request, response) {
+const handler = async (request, response) => {
+  const origin = request.headers.origin;
+
+  // Allow cross-origin requests from any origin
+  response.setHeader("Access-Control-Allow-Origin", "*");
+  response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  response.setHeader("Access-Control-Allow-Credentials", "true");
+
   const { url, method } = request;
   const { pathname } = parse(url, true);
 
@@ -16,6 +24,6 @@ function handler(request, response) {
     );
     response.end();
   });
-}
+};
 
 export default handler;

@@ -1,7 +1,6 @@
 import { DEFAULT_HEADER } from "../util/util.js";
 import fs from "node:fs";
 import { v4 as uuidv4 } from "uuid";
-import { encrypt_password } from "../util/.password.js";
 
 const readFile = async () => {
   return new Promise((resolve, reject) => {
@@ -16,11 +15,8 @@ const readFile = async () => {
 };
 
 const writeFile = async (data) => {
-  const id = uuidv4();
-  const database = await readFile();
-  const info = JSON.parse(data);
-  encrypt_password(id, info.password);
-  database.push(info);
+  const database = await extended(data);
+
   return new Promise((resolve, reject) => {
     return fs.writeFile(
       "./database/.database.json",
@@ -34,6 +30,17 @@ const writeFile = async (data) => {
       }
     );
   });
+};
+
+const extended = async (data) => {
+  const database = await readFile();
+  const info = JSON.parse(data);
+
+  info["id"] = uuidv4();
+  info["active"] = false;
+
+  database.push(info);
+  return database;
 };
 
 export { readFile, writeFile };
