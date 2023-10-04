@@ -11,7 +11,13 @@ const routes = {
   },
   "/user:post": async (request, response) => {
     const data = once(request, "data");
-    console.log("post");
+    const result = await writeFile(data);
+    response.writeHead(200, DEFAULT_HEADER);
+    response.write(JSON.stringify(result));
+    response.end();
+  },
+  "/message:post": async (request, response) => {
+    const data = once(request, "data");
     const result = await writeFile(data);
     response.writeHead(200, DEFAULT_HEADER);
     response.write(JSON.stringify(result));

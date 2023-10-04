@@ -3,8 +3,6 @@ import { routes } from "./routes/routes.js";
 import { DEFAULT_HEADER } from "./util/util.js";
 
 const handler = async (request, response) => {
-  const origin = request.headers.origin;
-
   // Allow cross-origin requests from any origin
   response.setHeader("Access-Control-Allow-Origin", "*");
   response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");

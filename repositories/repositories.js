@@ -1,10 +1,9 @@
-import { DEFAULT_HEADER } from "../util/util.js";
 import fs from "node:fs";
 import { v4 as uuidv4 } from "uuid";
 
 const readFile = async () => {
   return new Promise((resolve, reject) => {
-    return fs.readFile("./database/.database.json", (error, data) => {
+    fs.readFile("./database/.database.json", (error, data) => {
       if (error) {
         reject(error);
         return;
@@ -18,7 +17,7 @@ const writeFile = async (data) => {
   const database = await extended(data);
 
   return new Promise((resolve, reject) => {
-    return fs.writeFile(
+    fs.writeFile(
       "./database/.database.json",
       JSON.stringify(database),
       (err) => {
