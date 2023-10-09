@@ -1,16 +1,23 @@
 [
   {
-    "name": "John Doe",
-    "email": "john@gmail.com",
-    "password": "HABelke52#@alie",
-    "id": "b7b96961-527a-4329-a547-95185c018660",
-    "active": false
-  },
-  {
     "name": "Ruth Doe",
     "email": "example@gmail.com",
     "password": "HABelke52#@alie",
     "id": "0a9597d2-0453-43f4-b176-b60bf54633c5",
+    "active": false
+  },
+  {
+    "fullname": "Carlos Doe",
+    "email": "carlos@gmail.com",
+    "password": "Aa1!",
+    "id": "88f8103b-2494-4fef-b37b-bcefe00ed35f",
+    "active": false
+  },
+  {
+    "fullname": "John Doe",
+    "email": "john@gmail.com",
+    "password": "Aa1!",
+    "id": "ba082040-2615-4e9b-8ee4-6937255d8d23",
     "active": false
   }
 ]
