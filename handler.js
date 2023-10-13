@@ -1,6 +1,6 @@
 import { parse } from "node:url";
 import { routes } from "./routes/routes.js";
-import { DEFAULT_HEADER } from "./util/util.js";
+import { headerResponse } from "./util/util.js";
 
 const handler = async (request, response) => {
   response.setHeader("Access-Control-Allow-Origin", "*");
@@ -21,11 +21,14 @@ const handler = async (request, response) => {
   const chosen = routes[key] || routes.default;
 
   return Promise.resolve(chosen(request, response)).catch((error) => {
-    response.writeHead(500, DEFAULT_HEADER);
-    response.write(
-      JSON.stringify({ error: `Internal server error!! ${error}` })
+    headerResponse(
+      response,
+      500,
+      {
+        error: `Internal server error!! ${error}`,
+      },
+      "json"
     );
-    response.end();
   });
 };
 

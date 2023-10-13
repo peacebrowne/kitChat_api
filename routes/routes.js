@@ -1,26 +1,25 @@
-import { readFile, writeFile } from "../repositories/repositories.js";
-import { DEFAULT_HEADER } from "../util/util.js";
+import { readData, writeData } from "../repositories/repositories.js";
+import { headerResponse } from "../util/util.js";
 import { once } from "node:events";
+import { signIn, signUp } from "../validation/validation.js";
 
 const routes = {
   "/user:get": async (request, response) => {
-    const data = await readFile();
-    response.writeHead(200, DEFAULT_HEADER);
-    response.write(JSON.stringify(data));
-    response.end();
+    const data = await readData();
+    headerResponse(response, 200, data);
   },
   "/user:post": async (request, response) => {
     const data = await once(request, "data");
-    const result = await writeFile(data);
-    response.writeHead(200, DEFAULT_HEADER);
-    response.write(JSON.stringify(result));
-    response.end();
+    const result = await signUp(data);
+    headerResponse(response, 200, result);
   },
-  default: (request, response) => {
-    response.writeHead(404, DEFAULT_HEADER);
-    response.write("Ooops not found!");
-    response.end();
+  "/signIn:post": async (request, response) => {
+    const data = await once(request, "data");
+    const result = await signIn(data);
+    headerResponse(response, 200, result);
   },
+  default: (request, response) =>
+    headerResponse(response, 404, "Ooops not found!"),
 };
 
 export { routes };
