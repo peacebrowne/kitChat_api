@@ -1,11 +1,12 @@
-import { readData, writeData } from "../repositories/repositories.js";
+import { readData, singleUser } from "../repositories/repositories.js";
 import { headerResponse } from "../util/util.js";
 import { once } from "node:events";
 import { signIn, signUp } from "../validation/validation.js";
 
 const routes = {
-  "/user:get": async (request, response) => {
-    const data = await readData();
+  "/user:get": async (request, response, param) => {
+    const id = param.get("id");
+    const data = id ? await singleUser(id) : await readData();
     headerResponse(response, 200, data);
   },
   "/user:post": async (request, response) => {

@@ -38,46 +38,18 @@ const writeData = async (data) => {
   });
 };
 
-// writeData();
-
-// DROP TABLE
-// db.run("DROP TABLE users");
-
-// INSERT DATA INTO TABLE
-// transaction = `INSERT INTO users (id, fullname, email, password) VALUES (?,?,?,?)`;
-// db.run(
-//   transaction,
-//   [
-//     "bbdf7857-ee18-4a79-9734-237a242db501",
-//     "Kona Doe",
-//     "kona@gmail.com",
-//     "Bb1!",
-//   ],
-//   (err) => {
-//     if (err) return console.error(err.message);
-//   }
-// );
-
-// UPDATE
-// transaction = `UPDATE users SET active = ?`;
-// db.run(transaction, "true", (err) => {
-//   if (err) return console.error(err.message);
-// });
-
-// DELETE
-// transaction = `DELETE FROM users WHERE email = ?`;
-// db.run(transaction, "peace@gmail.com", (err) => {
-//   if (err) return console.error(err.message);
-//   console.log("Deleted");
-// });
-
 // QUERY SINGLE DATA
-// transaction = `SELECT * FROM users WHERE email = ?`;
-// db.get(transaction, "blama@gmail.com", (err, row) => {
-//   if (err) return console.error(err.message);
-//   console.log(row);
-// });
+const singleUser = (id) => {
+  transaction = `SELECT fullname, email, active FROM users WHERE id = ?`;
+  return new Promise((resolve, reject) => {
+    db.get(transaction, id, (err, data) => {
+      if (err) return reject(err.message);
+      resolve(data);
+    });
+  });
+};
 
+// SIGNIN VALIDATION
 const signInValidation = (email) => {
   transaction = `SELECT * FROM users WHERE email = ?`;
   return new Promise((resolve, reject) => {
@@ -104,4 +76,23 @@ const signInValidation = (email) => {
 //   console.log(rows);
 //   // rows.forEach((row) => console.log(row));
 // });
-export { readData, writeData, signInValidation };
+
+// writeData();
+
+// DROP TABLE
+// db.run("DROP TABLE users");
+
+// UPDATE
+// transaction = `UPDATE users SET active = ?`;
+// db.run(transaction, "true", (err) => {
+//   if (err) return console.error(err.message);
+// });
+
+// DELETE
+// transaction = `DELETE FROM users WHERE email = ?`;
+// db.run(transaction, "peace@gmail.com", (err) => {
+//   if (err) return console.error(err.message);
+//   console.log("Deleted");
+// });
+
+export { readData, writeData, signInValidation, singleUser };

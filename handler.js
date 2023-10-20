@@ -15,12 +15,17 @@ const handler = async (request, response) => {
   }
 
   const { url, method } = request;
-  const { pathname } = parse(url, true);
 
+  // Extract parameters from the URL if needed
+  const { pathname, search } = parse(url, true);
+  const param = new URLSearchParams(search);
   const key = `${pathname}:${method.toLowerCase()}`;
+
   const chosen = routes[key] || routes.default;
 
-  return Promise.resolve(chosen(request, response)).catch((error) => {
+  return Promise.resolve(
+    param ? chosen(request, response, param) : chosen(request, response)
+  ).catch((error) => {
     headerResponse(
       response,
       500,
