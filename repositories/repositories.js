@@ -12,7 +12,7 @@ db.run(transaction);
 
 // QUERY ALL THE DATA
 const readData = async () => {
-  transaction = "SELECT  id, fullname, email, active FROM users";
+  transaction = "SELECT  id, fullname, email, active, color FROM users";
   return new Promise((resolve, reject) => {
     db.all(transaction, (err, data) => {
       if (err) return reject(err.message);
@@ -27,20 +27,24 @@ const writeData = async (data) => {
   info["id"] = uuidv4();
   info["active"] = "false";
 
-  const { fullname, email, password, id, active } = info;
+  const { fullname, email, password, id, active, color } = info;
   transaction =
-    "INSERT INTO users(fullname, email, password, id, active) VALUES (?,?,?,?,?)";
+    "INSERT INTO users(fullname, email, password, id, active, color) VALUES (?,?,?,?,?,?)";
   return new Promise((resolve, reject) => {
-    db.run(transaction, [fullname, email, password, id, active], (err) => {
-      if (err) return reject(err.message);
-      resolve("User Successfully Registered!");
-    });
+    db.run(
+      transaction,
+      [fullname, email, password, id, active, color],
+      (err) => {
+        if (err) return reject(err.message);
+        resolve("User Successfully Registered!");
+      }
+    );
   });
 };
 
 // QUERY SINGLE DATA
 const singleUser = (id) => {
-  transaction = `SELECT fullname, email, active FROM users WHERE id = ?`;
+  transaction = `SELECT fullname, email, active, color FROM users WHERE id = ?`;
   return new Promise((resolve, reject) => {
     db.get(transaction, id, (err, data) => {
       if (err) return reject(err.message);
@@ -65,7 +69,7 @@ const signInValidation = (email) => {
 
 // ADD COLUMN TO TABLE
 // transaction = "ALTER TABLE users ADD COLUMN";
-// db.run(`${transaction} active TEXT`, (err) => {
+// db.run(`${transaction} color TEXT`, (err) => {
 //   if (err) return console.error(err.message);
 //   console.log("Added");
 // });
@@ -83,14 +87,14 @@ const signInValidation = (email) => {
 // db.run("DROP TABLE users");
 
 // UPDATE
-// transaction = `UPDATE users SET active = ?`;
-// db.run(transaction, "true", (err) => {
+// transaction = `UPDATE users SET color = ? WHERE email = ?`;
+// db.run(transaction, ["#581d0a", "peace@gmail.com"], (err) => {
 //   if (err) return console.error(err.message);
 // });
 
 // DELETE
 // transaction = `DELETE FROM users WHERE email = ?`;
-// db.run(transaction, "peace@gmail.com", (err) => {
+// db.run(transaction, "lydia@gmail.com", (err) => {
 //   if (err) return console.error(err.message);
 //   console.log("Deleted");
 // });
