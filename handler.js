@@ -25,16 +25,11 @@ const handler = async (request, response) => {
   const chosen = routes[key] || routes.default;
 
   return Promise.resolve(
-    param ? chosen(request, response, param) : chosen(request, response)
+    param ? chosen(response, param) : chosen(request, response)
   ).catch((error) => {
-    headerResponse(
-      response,
-      500,
-      {
-        error: `Internal server error!! ${error}`,
-      },
-      "json"
-    );
+    headerResponse(response, 500, {
+      error: `Internal server error!! ${error}`,
+    });
   });
 };
 

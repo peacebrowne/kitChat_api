@@ -1,13 +1,17 @@
 import sqlite3 from "sqlite3";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 
 let transaction;
 
 // CONNECT TO DB
 const db = new sqlite3.Database("database.db");
 
-// CREATE TABLE
+// CREATE USER TABLE
 transaction = `CREATE TABLE IF NOT EXISTS users (fullname TEXT, email TEXT PRIMARY KEY, password TEXT, id TEXT, active TEXT )`;
+db.run(transaction);
+
+// CREATE MESSAGE TABLE
+transaction = `CREATE TABLE IF NOT EXISTS messages (message TEXT, "from" TEXT, "to" TEXT, year INTEGER, month INTEGER, day INTEGER, hour INTEGER, minute INTEGER, second INTEGER)`;
 db.run(transaction);
 
 // QUERY ALL THE DATA
@@ -24,8 +28,6 @@ const readData = async () => {
 // INSERTING INTO DB
 const writeData = async (data) => {
   const info = JSON.parse(data);
-  info["id"] = uuidv4();
-  info["active"] = "false";
 
   const { fullname, email, password, id, active, color } = info;
   transaction =
@@ -42,6 +44,53 @@ const writeData = async (data) => {
   });
 };
 
+const writeMessage = async (msg) => {
+  transaction = `INSERT INTO messages(message, 'from', 'to', year, month, day, hour, minute, second) VALUES(?,?,?,?,?,?,?,?,?)`;
+  return new Promise((resolve, reject) => {
+    db.run(
+      transaction,
+      [
+        msg.msg,
+        msg.from,
+        msg.to,
+        msg.date.year,
+        msg.date.month,
+        msg.date.day,
+        msg.date.hour,
+        msg.date.minute,
+        msg.date.second,
+      ],
+      (err) => {
+        if (err) {
+          return reject(err);
+        }
+        console.log("message successfully stored");
+        resolve("Message Successfully Stored!");
+      }
+    );
+  });
+};
+
+const readMessages = () => {
+  transaction = `SELECT * from messages`;
+
+  return new Promise((resolve, reject) => {
+    db.all(transaction, (err, data) => {
+      if (err) {
+        return reject(err.message);
+      }
+      resolve(data);
+    });
+  });
+};
+
+const activeSection = (data) => {
+  transaction = `UPDATE users SET active = ? WHERE email = ?`;
+  db.run(transaction, [data.status, data.email], (err) => {
+    if (err) return console.error(err.message);
+  });
+};
+
 // QUERY SINGLE DATA
 const singleUser = (id) => {
   transaction = `SELECT fullname, email, active, color FROM users WHERE id = ?`;
@@ -55,7 +104,7 @@ const singleUser = (id) => {
 
 // SIGNIN VALIDATION
 const signInValidation = (email) => {
-  transaction = `SELECT * FROM users WHERE email = ?`;
+  transaction = `SELECT email, password, id FROM users WHERE email = ?`;
   return new Promise((resolve, reject) => {
     db.get(transaction, email, (err, data) => {
       if (err) {
@@ -99,4 +148,12 @@ const signInValidation = (email) => {
 //   console.log("Deleted");
 // });
 
-export { readData, writeData, signInValidation, singleUser };
+export {
+  readData,
+  writeData,
+  signInValidation,
+  singleUser,
+  activeSection,
+  writeMessage,
+  readMessages,
+};

@@ -1,26 +1,58 @@
-import { signInValidation, writeData } from "../repositories/repositories.js";
+import {
+  signInValidation,
+  writeData,
+  activeSection,
+  readMessages,
+} from "../repositories/repositories.js";
+import { v4 as uuidv4 } from "uuid";
 
 const signIn = async (data) => {
-  const info = JSON.parse(data);
-  const result = await signInValidation(info.email);
-  if (!result) return "false";
+  const { email, password } = JSON.parse(data);
+  const result = await signInValidation(email);
+  if (!result) return false;
 
-  return result.email === info.email && result.password === info.password
-    ? "true"
-    : "false";
+  return result.email === email && result.password === password
+    ? cookie(result)
+    : false;
+};
+
+const cookie = (data) => {
+  activeSection({ email: data.email, status: true });
+  return {
+    session: `session=${data.email.split("@")[0]}; Max-Age=3600; Path=/`,
+    status: true,
+  };
+};
+
+const logOut = async (cookie) => {
+  delete activeSection[cookie];
+  return true;
+};
+
+const privateMessages = async (from, to) => {
+  const messages = await readMessages();
+  return messages.filter(
+    (msg) =>
+      (msg.from === from && msg.to === to) ||
+      (msg.from === to && msg.to === from)
+  );
 };
 
 const email = async (data) => {
-  const info = JSON.parse(data);
-  const result = await signInValidation(JSON.parse(info.email));
-  if (!result) return "false";
+  const { email } = JSON.parse(data);
+  const result = await signInValidation(email);
+  if (!result) return { status: false };
 };
 
 const signUp = async (data) => {
   const info = JSON.parse(data);
   const result = await signInValidation(info.email);
-  if (result) return { msg: "User Already Exit!", status: "false" };
-  return { msg: await writeData(data), status: "true" };
+  info["id"] = uuidv4();
+  info["active"] = "false";
+
+  return result
+    ? { msg: "User Already Exit!", status: false }
+    : { msg: await writeData(info), status: true };
 };
 
-export { signIn, signUp };
+export { signIn, signUp, logOut, privateMessages };
