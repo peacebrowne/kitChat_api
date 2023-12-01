@@ -11,7 +11,7 @@ const headerResponse = (response, status, data) => {
       : DEFAULT_HEADER
   );
 
-  response.write(JSON.stringify(data.status ? data.status : data));
+  response.write(JSON.stringify(data));
   response.end();
 };
 

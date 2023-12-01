@@ -21,11 +21,10 @@ const handler = async (request, response) => {
   const param = new URLSearchParams(search);
 
   const key = `${pathname}:${method.toLowerCase()}`;
-
   const chosen = routes[key] || routes.default;
 
   return Promise.resolve(
-    param ? chosen(response, param) : chosen(request, response)
+    param ? chosen(request, response, param) : chosen(request, response)
   ).catch((error) => {
     headerResponse(response, 500, {
       error: `Internal server error!! ${error}`,

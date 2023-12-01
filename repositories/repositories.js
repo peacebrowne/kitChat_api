@@ -27,17 +27,15 @@ const readData = async () => {
 
 // INSERTING INTO DB
 const writeData = async (data) => {
-  const info = JSON.parse(data);
-
-  const { fullname, email, password, id, active, color } = info;
+  const { fullname, email, password, id, active, color } = data;
   transaction =
     "INSERT INTO users(fullname, email, password, id, active, color) VALUES (?,?,?,?,?,?)";
   return new Promise((resolve, reject) => {
     db.run(
       transaction,
       [fullname, email, password, id, active, color],
-      (err) => {
-        if (err) return reject(err.message);
+      (error) => {
+        if (error) return reject(error.message);
         resolve("User Successfully Registered!");
       }
     );
@@ -135,15 +133,22 @@ const signInValidation = (email) => {
 // DROP TABLE
 // db.run("DROP TABLE users");
 
-// UPDATE
+// UPDATE USER
 // transaction = `UPDATE users SET color = ? WHERE email = ?`;
 // db.run(transaction, ["#581d0a", "peace@gmail.com"], (err) => {
 //   if (err) return console.error(err.message);
 // });
 
-// DELETE
+// DELETE USER
 // transaction = `DELETE FROM users WHERE email = ?`;
-// db.run(transaction, "lydia@gmail.com", (err) => {
+// db.run(transaction, "nathan@gmail.com", (err) => {
+//   if (err) return console.error(err.message);
+//   console.log("Deleted");
+// });
+
+// DELETE MESSAGES
+// transaction = `DELETE  FROM messages WHERE "to" = ?`;
+// db.run(transaction, "othniel@gmail.com", (err) => {
 //   if (err) return console.error(err.message);
 //   console.log("Deleted");
 // });

@@ -20,7 +20,7 @@ const cookie = (data) => {
   activeSection({ email: data.email, status: true });
   return {
     session: `session=${data.email.split("@")[0]}; Max-Age=3600; Path=/`,
-    status: true,
+    status: data.id,
   };
 };
 
