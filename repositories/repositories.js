@@ -7,7 +7,7 @@ let transaction;
 const db = new sqlite3.Database("database.db");
 
 // CREATE USER TABLE
-transaction = `CREATE TABLE IF NOT EXISTS users (fullname TEXT, email TEXT PRIMARY KEY, password TEXT, id TEXT, active TEXT )`;
+transaction = `CREATE TABLE IF NOT EXISTS users (fullname TEXT, email TEXT PRIMARY KEY, password TEXT, id TEXT)`;
 db.run(transaction);
 
 // CREATE MESSAGE TABLE
@@ -16,7 +16,7 @@ db.run(transaction);
 
 // QUERY ALL THE DATA
 const readData = async () => {
-  transaction = "SELECT  id, fullname, email, active, color FROM users";
+  transaction = "SELECT  id, fullname, email, color FROM users";
   return new Promise((resolve, reject) => {
     db.all(transaction, (err, data) => {
       if (err) return reject(err.message);
@@ -29,16 +29,12 @@ const readData = async () => {
 const writeData = async (data) => {
   const { fullname, email, password, id, active, color } = data;
   transaction =
-    "INSERT INTO users(fullname, email, password, id, active, color) VALUES (?,?,?,?,?,?)";
+    "INSERT INTO users(fullname, email, password, id, color) VALUES (?,?,?,?,?)";
   return new Promise((resolve, reject) => {
-    db.run(
-      transaction,
-      [fullname, email, password, id, active, color],
-      (error) => {
-        if (error) return reject(error.message);
-        resolve("User Successfully Registered!");
-      }
-    );
+    db.run(transaction, [fullname, email, password, id, color], (error) => {
+      if (error) return reject(error.message);
+      resolve("User Successfully Registered!");
+    });
   });
 };
 
@@ -48,7 +44,7 @@ const writeMessage = async (msg) => {
     db.run(
       transaction,
       [
-        msg.msg,
+        msg.message,
         msg.from,
         msg.to,
         msg.date.year,
@@ -122,7 +118,7 @@ const signInValidation = (email) => {
 //   console.log("Dropped");
 // });
 
-// transaction = "SELECT  * FROM users";
+// transaction = "SELECT  * FROM messages";
 // db.all(transaction, (err, rows) => {
 //   if (err) return console.error(err.message);
 //   console.log(rows);
@@ -148,8 +144,8 @@ const signInValidation = (email) => {
 // });
 
 // DELETE MESSAGES
-// transaction = `DELETE  FROM messages WHERE "to" = ?`;
-// db.run(transaction, "othniel@gmail.com", (err) => {
+// transaction = `DELETE FROM messages WHERE "to" = ?`;
+// db.run(transaction, "9eb3df37-1b7e-4f54-95f2-dc528cf9a0f8", (err) => {
 //   if (err) return console.error(err.message);
 //   console.log("Deleted");
 // });

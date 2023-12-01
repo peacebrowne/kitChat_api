@@ -4,7 +4,7 @@ import { Server } from "socket.io";
 import { writeMessage } from "./repositories/repositories.js";
 
 const PORT = process.env.PORT || 8080;
-let users = [];
+let activeUsers = [];
 
 const server = createServer(handler).listen(PORT, () =>
   console.log(`Server is running on port ${PORT}`)
@@ -21,10 +21,13 @@ io.on("connection", (socket) => {
 
   // Active users
   socket.on("user", (data) => {
-    const existingUser = users.find((user) => user.user === data);
+    const existingUser = activeUsers.find((user) => user.user === data);
     if (!existingUser) {
-      users.push({ user: data, id: socket.id });
-      if (users.length > 1) io.emit("active", users);
+      activeUsers.push({
+        id: data,
+        socketID: socket.id,
+      });
+      if (activeUsers.length > 1) io.emit("active", activeUsers);
     }
   });
 
@@ -32,17 +35,17 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     console.log("A user disconnected");
 
-    const disconnectedUser = users.find((user) => user.id === socket.id);
+    const disconnectedUser = activeUsers.find(
+      (user) => user.socketID === socket.id
+    );
     io.emit("disconnectedUser", disconnectedUser);
-    users = users.filter((user) => user.id !== socket.id);
+    activeUsers = activeUsers.filter((user) => user.socketID !== socket.id);
   });
 
   // Chat messages
-  socket.on("chat message", (msg) => {
-    console.log("Current message");
-
-    writeMessage(msg);
-    const friend = users.find((user) => user.user === msg.to);
-    if (friend) io.to(friend.id).emit("chat message", msg);
+  socket.on("private message", (message) => {
+    writeMessage(message);
+    const friend = activeUsers.find((user) => user.id === message.to);
+    if (friend) io.to(friend.socketID).emit("private message", message);
   });
 });

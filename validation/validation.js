@@ -12,7 +12,7 @@ const signIn = async (data) => {
   if (!result) return false;
 
   return result.email === email && result.password === password
-    ? cookie(result)
+    ? result.id
     : false;
 };
 
