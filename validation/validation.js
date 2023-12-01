@@ -48,7 +48,6 @@ const signUp = async (data) => {
   const info = JSON.parse(data);
   const result = await signInValidation(info.email);
   info["id"] = uuidv4();
-  info["active"] = "false";
 
   return result
     ? { msg: "User Already Exit!", status: false }

@@ -116,9 +116,10 @@ const signInValidation = (email) => {
 
 // ADD COLUMN TO TABLE
 // transaction = "ALTER TABLE users ADD COLUMN";
-// db.run(`${transaction} color TEXT`, (err) => {
+// transaction = "ALTER TABLE users DROP COLUMN active";
+// db.run(`${transaction}`, (err) => {
 //   if (err) return console.error(err.message);
-//   console.log("Added");
+//   console.log("Dropped");
 // });
 
 // transaction = "SELECT  * FROM users";
