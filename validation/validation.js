@@ -3,6 +3,7 @@ import {
   writeData,
   activeSection,
   readMessages,
+  readData,
 } from "../repositories/repositories.js";
 import { v4 as uuidv4 } from "uuid";
 
@@ -29,19 +30,93 @@ const logOut = async (cookie) => {
   return true;
 };
 
-const privateMessages = async (from, to) => {
+const privateMessages = async (userID, friendID) => {
   const messages = await readMessages();
   return messages.filter(
     (msg) =>
-      (msg.from === from && msg.to === to) ||
-      (msg.from === to && msg.to === from)
+      (msg.from === userID && msg.to === friendID) ||
+      (msg.from === friendID && msg.to === userID)
   );
 };
 
-const email = async (data) => {
-  const { email } = JSON.parse(data);
-  const result = await signInValidation(email);
-  if (!result) return { status: false };
+const previousConversations = async (id) => {
+  const users = await readData();
+  const latestMessages = [];
+
+  for (const user of users) {
+    const messages = await privateMessages(id, user.id);
+
+    if (messages.length > 0) {
+      let latestMessage = messages[0];
+
+      for (const message of messages) {
+        if (isMessageMoreRecent(message, latestMessage)) {
+          latestMessage = message;
+        }
+      }
+
+      const { year, month, day, hour, minute, second, id } = latestMessage;
+
+      latestMessages.push({
+        fullname: user.fullname,
+        id: user.id,
+        color: user.color,
+        message: {
+          message: latestMessage.message,
+          year,
+          month,
+          day,
+          hour,
+          minute,
+          second,
+          id,
+        },
+      });
+    } else if (user.id !== id) {
+      latestMessages.push({
+        fullname: user.fullname,
+        id: user.id,
+        color: user.color,
+        message: {
+          message: "",
+          year: "",
+          month: "",
+          day: "",
+          hour: "",
+          minute: "",
+          second: "",
+          id: 0,
+        },
+      });
+    }
+  }
+  return sortLatestMessages(latestMessages);
+};
+
+const sortLatestMessages = (latestMessages) => {
+  const length = latestMessages.length;
+  for (let i = 0; i < length; i++) {
+    for (let j = i; j < length; j++) {
+      const temp = latestMessages[i];
+      if (latestMessages[j].message.id < latestMessages[i].message.id) {
+        latestMessages[i] = latestMessages[j];
+        latestMessages[j] = temp;
+      }
+    }
+  }
+
+  return latestMessages.reverse();
+};
+
+const isMessageMoreRecent = (message, latestMessage) => {
+  return message.year > latestMessage.year ||
+    message.month > latestMessage.month ||
+    message.day > latestMessage.day ||
+    message.hour > latestMessage.hour ||
+    message.minute > latestMessage.minute ||
+    message.second > latestMessage.second
+    ? true
+    : false;
 };
 
 const signUp = async (data) => {
@@ -54,4 +129,4 @@ const signUp = async (data) => {
     : { msg: await writeData(info), status: true };
 };
 
-export { signIn, signUp, logOut, privateMessages };
+export { signIn, signUp, logOut, privateMessages, previousConversations };

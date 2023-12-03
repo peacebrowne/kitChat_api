@@ -11,7 +11,19 @@ transaction = `CREATE TABLE IF NOT EXISTS users (fullname TEXT, email TEXT PRIMA
 db.run(transaction);
 
 // CREATE MESSAGE TABLE
-transaction = `CREATE TABLE IF NOT EXISTS messages (message TEXT, "from" TEXT, "to" TEXT, year INTEGER, month INTEGER, day INTEGER, hour INTEGER, minute INTEGER, second INTEGER)`;
+transaction = `CREATE TABLE IF NOT EXISTS messages (
+    message TEXT,
+    "from" TEXT,
+    "to" TEXT,
+    year INTEGER,
+    month INTEGER,
+    day INTEGER,
+    hour TEXT,
+    minute INTEGER,
+    second INTEGER,
+    id INTEGER PRIMARY KEY NOT NULL
+);
+`;
 db.run(transaction);
 
 // QUERY ALL THE DATA
@@ -86,6 +98,7 @@ const activeSection = (data) => {
 };
 
 // QUERY SINGLE DATA
+
 const singleUser = (id) => {
   transaction = `SELECT fullname, email, active, color FROM users WHERE id = ?`;
   return new Promise((resolve, reject) => {
@@ -111,11 +124,11 @@ const signInValidation = (email) => {
 };
 
 // ADD COLUMN TO TABLE
-// transaction = "ALTER TABLE users ADD COLUMN";
-// transaction = "ALTER TABLE users DROP COLUMN active";
+// transaction = "ALTER TABLE messages ADD COLUMN id";
+// transaction = "ALTER TABLE messages DROP COLUMN timestamp";
 // db.run(`${transaction}`, (err) => {
 //   if (err) return console.error(err.message);
-//   console.log("Dropped");
+//   console.log("Added");
 // });
 
 // transaction = "SELECT  * FROM messages";
@@ -128,7 +141,7 @@ const signInValidation = (email) => {
 // writeData();
 
 // DROP TABLE
-// db.run("DROP TABLE users");
+// db.run("DROP TABLE messages");
 
 // UPDATE USER
 // transaction = `UPDATE users SET color = ? WHERE email = ?`;
@@ -143,9 +156,9 @@ const signInValidation = (email) => {
 //   console.log("Deleted");
 // });
 
-// DELETE MESSAGES
-// transaction = `DELETE FROM messages WHERE "to" = ?`;
-// db.run(transaction, "9eb3df37-1b7e-4f54-95f2-dc528cf9a0f8", (err) => {
+// DELETE MESSAGES/
+// transaction = `DELETE FROM messages`;
+// db.run(transaction, (err) => {
 //   if (err) return console.error(err.message);
 //   console.log("Deleted");
 // });

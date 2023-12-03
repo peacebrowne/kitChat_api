@@ -4,13 +4,13 @@ import { once } from "node:events";
 import {
   signIn,
   signUp,
-  logOut,
   privateMessages,
+  previousConversations,
 } from "../validation/validation.js";
 const routes = {
   "/user:get": async (request, response, param) => {
     const id = param.get("id");
-    const data = id ? await singleUser(id) : await readData();
+    const data = id ? await previousConversations(id) : await readData();
     headerResponse(response, 200, data);
   },
   "/messages:get": async (request, response, param) => {
