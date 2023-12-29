@@ -1,5 +1,4 @@
 import sqlite3 from "sqlite3";
-// import { v4 as uuidv4 } from "uuid";
 
 let transaction;
 
@@ -7,23 +6,15 @@ let transaction;
 const db = new sqlite3.Database("database.db");
 
 // CREATE USER TABLE
-transaction = `CREATE TABLE IF NOT EXISTS users (fullname TEXT, email TEXT PRIMARY KEY, password TEXT, id TEXT)`;
+transaction = `CREATE TABLE IF NOT EXISTS users (
+                fullname TEXT NOT NULL, email TEXT PRIMARY KEY NOT NULL, password TEXT NOT NULL, id TEXT NOT NULL, color TEXT NOT NULL
+              );`;
 db.run(transaction);
 
 // CREATE MESSAGE TABLE
-transaction = `CREATE TABLE IF NOT EXISTS messages (
-    message TEXT,
-    "from" TEXT,
-    "to" TEXT,
-    year INTEGER,
-    month INTEGER,
-    day INTEGER,
-    hour TEXT,
-    minute INTEGER,
-    second INTEGER,
-    id INTEGER PRIMARY KEY NOT NULL
-);
-`;
+transaction = `CREATE TABLE IF NOT EXISTS messages ( 
+                message TEXT NOT NULL, "from" TEXT NOT NULL, "to" TEXT NOT NULL,  id INTEGER PRIMARY KEY NOT NULL, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                );`;
 db.run(transaction);
 
 // QUERY ALL THE DATA
@@ -39,9 +30,12 @@ const readData = async () => {
 
 // INSERTING INTO DB
 const writeData = async (data) => {
-  const { fullname, email, password, id, active, color } = data;
+  const { fullname, email, password, id, color } = data;
+  console.log(data);
+
   transaction =
     "INSERT INTO users(fullname, email, password, id, color) VALUES (?,?,?,?,?)";
+
   return new Promise((resolve, reject) => {
     db.run(transaction, [fullname, email, password, id, color], (error) => {
       if (error) return reject(error.message);
@@ -51,35 +45,19 @@ const writeData = async (data) => {
 };
 
 const writeMessage = async (msg) => {
-  transaction = `INSERT INTO messages(message, 'from', 'to', year, month, day, hour, minute, second) VALUES(?,?,?,?,?,?,?,?,?)`;
+  transaction = `INSERT INTO messages(message, 'from', 'to') VALUES(?,?,?)`;
   return new Promise((resolve, reject) => {
-    db.run(
-      transaction,
-      [
-        msg.message,
-        msg.from,
-        msg.to,
-        msg.date.year,
-        msg.date.month,
-        msg.date.day,
-        msg.date.hour,
-        msg.date.minute,
-        msg.date.second,
-      ],
-      (err) => {
-        if (err) {
-          return reject(err);
-        }
-        console.log("message successfully stored");
-        resolve("Message Successfully Stored!");
+    db.run(transaction, [msg.message, msg.from, msg.to], (err) => {
+      if (err) {
+        return reject(err);
       }
-    );
+      resolve("Message Successfully Stored!");
+    });
   });
 };
 
 const readMessages = () => {
-  transaction = `SELECT * from messages`;
-
+  transaction = `SELECT * from messages ORDER BY id DESC`;
   return new Promise((resolve, reject) => {
     db.all(transaction, (err, data) => {
       if (err) {
@@ -90,14 +68,23 @@ const readMessages = () => {
   });
 };
 
-const activeSection = (data) => {
-  transaction = `UPDATE users SET active = ? WHERE email = ?`;
-  db.run(transaction, [data.status, data.email], (err) => {
-    if (err) return console.error(err.message);
-  });
-};
+// const previousMessages = (userID, friendID) => {
+//   transaction = `SELECT * FROM messages WHERE "from" = ? AND "to" = ? OR "from" = ? AND "to" = ? ORDER BY id DESC`;
+//   return new Promise((resolve, reject) => {
+//     db.get(transaction, [userID, friendID, friendID, userID], (err, data) => {
+//       if (err) {
+//         return reject(err.message);
+//       }
+//       console.log(data);
+//       resolve(data);
+//     });
+//   });
+// };
 
-// QUERY SINGLE DATA
+// previousMessages(
+//   "4fceb844-3588-4b90-a3fb-7cecda33c619",
+//   "4ddbb7b9-e881-46d5-ac34-69c6ccf6cffc"
+// );
 
 const singleUser = (id) => {
   transaction = `SELECT fullname, email, active, color FROM users WHERE id = ?`;
@@ -168,7 +155,7 @@ export {
   writeData,
   signInValidation,
   singleUser,
-  activeSection,
   writeMessage,
   readMessages,
+  // previousMessages,
 };

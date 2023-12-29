@@ -31,6 +31,12 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("signal", (call) => {
+    console.log(call);
+    const friend = activeUsers.find((user) => user.id === call.to);
+    if (friend) io.to(friend.socketID).emit("signal", call);
+  });
+
   // Disconnected users
   socket.on("disconnect", () => {
     console.log("A user disconnected");

@@ -1,11 +1,13 @@
 import {
   signInValidation,
   writeData,
-  activeSection,
   readMessages,
   readData,
+  // previousMessages,
 } from "../repositories/repositories.js";
 import { v4 as uuidv4 } from "uuid";
+
+import nodemailer from "nodemailer";
 
 const signIn = async (data) => {
   const { email, password } = JSON.parse(data);
@@ -17,26 +19,37 @@ const signIn = async (data) => {
     : false;
 };
 
-const cookie = (data) => {
-  activeSection({ email: data.email, status: true });
-  return {
-    session: `session=${data.email.split("@")[0]}; Max-Age=3600; Path=/`,
-    status: data.id,
-  };
-};
-
-const logOut = async (cookie) => {
-  delete activeSection[cookie];
-  return true;
-};
-
 const privateMessages = async (userID, friendID) => {
   const messages = await readMessages();
-  return messages.filter(
+  const privateMessage = messages.filter(
     (msg) =>
       (msg.from === userID && msg.to === friendID) ||
       (msg.from === friendID && msg.to === userID)
   );
+
+  if (privateMessage.length) {
+    for (const message of privateMessage) {
+      const [date, time] = message.timestamp.split(" ");
+      const [year, month, day] = date.split("-");
+      const [hour, minute, second] = time.split(":");
+      const datetime = {
+        date: {
+          year,
+          month,
+          day,
+        },
+        time: {
+          hour,
+          minute,
+          second,
+        },
+      };
+      message["datetime"] = datetime;
+    }
+    return privateMessage;
+  }
+
+  return [];
 };
 
 const previousConversations = async (id) => {
@@ -46,50 +59,41 @@ const previousConversations = async (id) => {
   for (const user of users) {
     const messages = await privateMessages(id, user.id);
 
-    if (messages.length > 0) {
-      let latestMessage = messages[0];
-
-      for (const message of messages) {
-        if (isMessageMoreRecent(message, latestMessage)) {
-          latestMessage = message;
-        }
-      }
-
-      const { year, month, day, hour, minute, second, id } = latestMessage;
+    if (messages.length) {
+      const latestMessage = messages[0];
 
       latestMessages.push({
         fullname: user.fullname,
         id: user.id,
         color: user.color,
-        message: {
-          message: latestMessage.message,
-          year,
-          month,
-          day,
-          hour,
-          minute,
-          second,
-          id,
-        },
+        latestMessage,
       });
     } else if (user.id !== id) {
       latestMessages.push({
         fullname: user.fullname,
         id: user.id,
         color: user.color,
-        message: {
+        latestMessage: {
+          timestamp: "",
           message: "",
-          year: "",
-          month: "",
-          day: "",
-          hour: "",
-          minute: "",
-          second: "",
+          datetime: {
+            date: {
+              year: "",
+              month: "",
+              day: "",
+            },
+            time: {
+              hour: "",
+              minute: "",
+              second: "",
+            },
+          },
           id: 0,
         },
       });
     }
   }
+
   return sortLatestMessages(latestMessages);
 };
 
@@ -98,7 +102,9 @@ const sortLatestMessages = (latestMessages) => {
   for (let i = 0; i < length; i++) {
     for (let j = i; j < length; j++) {
       const temp = latestMessages[i];
-      if (latestMessages[j].message.id < latestMessages[i].message.id) {
+      if (
+        latestMessages[j].latestMessage.id < latestMessages[i].latestMessage.id
+      ) {
         latestMessages[i] = latestMessages[j];
         latestMessages[j] = temp;
       }
@@ -108,7 +114,7 @@ const sortLatestMessages = (latestMessages) => {
   return latestMessages.reverse();
 };
 
-const isMessageMoreRecent = (message, latestMessage) => {
+const mostRecentMessages = (message, latestMessage) => {
   return message.year > latestMessage.year ||
     message.month > latestMessage.month ||
     message.day > latestMessage.day ||
@@ -122,6 +128,7 @@ const isMessageMoreRecent = (message, latestMessage) => {
 const signUp = async (data) => {
   const info = JSON.parse(data);
   const result = await signInValidation(info.email);
+
   info["id"] = uuidv4();
 
   return result
@@ -129,4 +136,59 @@ const signUp = async (data) => {
     : { msg: await writeData(info), status: true };
 };
 
-export { signIn, signUp, logOut, privateMessages, previousConversations };
+const resetPassword = async (mail) => {
+  const data = JSON.parse(mail);
+  const result = await signInValidation(data.email);
+
+  return result
+    ? emailUser(data.email)
+    : {
+        msg: "There is no account with that email address.",
+        status: false,
+      };
+};
+
+const emailUser = async (email) => {
+  console.log(email);
+
+  const transporter = nodemailer.createTransport({
+    host: "mail.gmail.com",
+    port: 587,
+    secure: true,
+    service: "Gmail",
+    auth: {
+      user: "echoes832@gmail.com",
+      pass: "S3CCbK5guWPY4c",
+    },
+  });
+
+  // Email content
+  const mailOptions = {
+    from: '"Nodemailer Contact" <echoes832@gmail.com>',
+    to: email,
+    subject: "Password Reset Confirmation",
+    html: `<p>If this was a mistake, ignore this email and nothing will happen</p>.
+          <h5>To reset your password, visit the following address:</h5>
+          <a href="https://liberiabankers.org/wp-login.php?action=rp&key=2t0j9qOgnaKvZ4Rx1zGG&login=lba&wp_lang=en_US">
+            https://liberiabankers.org/wp-login.php?action=rp&key=2t0j9qOgnaKvZ4Rx1zGG&login=lba&wp_lang=en_US
+          </a>`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return {
+      msg: "Check your email for the confirmation link, then visit it.",
+      status: true,
+    };
+  } catch (error) {
+    console.error("Error sending email:", error.message);
+  }
+};
+
+export {
+  signIn,
+  signUp,
+  resetPassword,
+  privateMessages,
+  previousConversations,
+};
