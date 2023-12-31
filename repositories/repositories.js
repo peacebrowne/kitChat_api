@@ -19,7 +19,7 @@ db.run(transaction);
 
 // QUERY ALL THE DATA
 const readData = async () => {
-  transaction = "SELECT  id, fullname, email, color FROM users";
+  transaction = "SELECT  id, fullname, color FROM users";
   return new Promise((resolve, reject) => {
     db.all(transaction, (err, data) => {
       if (err) return reject(err.message);
@@ -31,7 +31,6 @@ const readData = async () => {
 // INSERTING INTO DB
 const writeData = async (data) => {
   const { fullname, email, password, id, color } = data;
-  console.log(data);
 
   transaction =
     "INSERT INTO users(fullname, email, password, id, color) VALUES (?,?,?,?,?)";
@@ -68,24 +67,6 @@ const readMessages = () => {
   });
 };
 
-// const previousMessages = (userID, friendID) => {
-//   transaction = `SELECT * FROM messages WHERE "from" = ? AND "to" = ? OR "from" = ? AND "to" = ? ORDER BY id DESC`;
-//   return new Promise((resolve, reject) => {
-//     db.get(transaction, [userID, friendID, friendID, userID], (err, data) => {
-//       if (err) {
-//         return reject(err.message);
-//       }
-//       console.log(data);
-//       resolve(data);
-//     });
-//   });
-// };
-
-// previousMessages(
-//   "4fceb844-3588-4b90-a3fb-7cecda33c619",
-//   "4ddbb7b9-e881-46d5-ac34-69c6ccf6cffc"
-// );
-
 const singleUser = (id) => {
   transaction = `SELECT fullname, email, active, color FROM users WHERE id = ?`;
   return new Promise((resolve, reject) => {
@@ -109,46 +90,6 @@ const signInValidation = (email) => {
     });
   });
 };
-
-// ADD COLUMN TO TABLE
-// transaction = "ALTER TABLE messages ADD COLUMN id";
-// transaction = "ALTER TABLE messages DROP COLUMN timestamp";
-// db.run(`${transaction}`, (err) => {
-//   if (err) return console.error(err.message);
-//   console.log("Added");
-// });
-
-// transaction = "SELECT  * FROM messages";
-// db.all(transaction, (err, rows) => {
-//   if (err) return console.error(err.message);
-//   console.log(rows);
-//   // rows.forEach((row) => console.log(row));
-// });
-
-// writeData();
-
-// DROP TABLE
-// db.run("DROP TABLE messages");
-
-// UPDATE USER
-// transaction = `UPDATE users SET color = ? WHERE email = ?`;
-// db.run(transaction, ["#581d0a", "peace@gmail.com"], (err) => {
-//   if (err) return console.error(err.message);
-// });
-
-// DELETE USER
-// transaction = `DELETE FROM users WHERE email = ?`;
-// db.run(transaction, "nathan@gmail.com", (err) => {
-//   if (err) return console.error(err.message);
-//   console.log("Deleted");
-// });
-
-// DELETE MESSAGES/
-// transaction = `DELETE FROM messages`;
-// db.run(transaction, (err) => {
-//   if (err) return console.error(err.message);
-//   console.log("Deleted");
-// });
 
 export {
   readData,
